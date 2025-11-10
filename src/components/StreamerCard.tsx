@@ -4,15 +4,20 @@ type Streamer = {
     status: string;
     lastOnline: string;
     profileUrl: string;
+    avatarUrl: string;
     pinned?: string;
 }
 
 function StreamerCard ({streamer}: {streamer:Streamer}){
     return(
         <div className="bg-gray 800 rounded-lg p-6 flex flex-col shadow-lg w-full max-w-xs">
+            <img
+                className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-gray-700 object-cover"
+                src={streamer.avatarUrl}           
+                />
             <div className="flex items-center">
                 <span className = "font-semibold text-lg">{streamer.name}</span>
-                <span className="text-xs ml-3 px-2 py-1 bg-green-700 rounded-full">{streamer.plataform}</span>
+                <span className="text-xs ml-3 px-2 py-1 bg-green-700 rounded-full">{streamer.platform}</span>
             </div>
             <div className="mt-2">
                 <span className={ `text-sm ${

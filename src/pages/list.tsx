@@ -7,6 +7,7 @@ const streamers = [
     status: "offline",
     lastOnline: "56 minutes ago",
     profileUrl: "https://kick.com/monkeykingcobra",
+    avatarUrl: " " ,
     pinned: "Last stream: gaming marathon!",
   },
   {
@@ -15,6 +16,7 @@ const streamers = [
     status: "live",
     lastOnline: "Now",
     profileUrl: "https://twitch.tv/mizzy",
+    avatarUrl:" " ,
   },
   {
     name: "Jane",
@@ -23,6 +25,7 @@ const streamers = [
     lastOnline: "5 hours ago",
     profileUrl: "https://youtube.com/@jane",
     pinned: "Special charity event last stream.",
+    avatarUrl: " " ,
   },
 ];
 
