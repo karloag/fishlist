@@ -39,7 +39,7 @@ function StreamerCard ({streamer}: {streamer:Streamer}){
              <a href={streamer.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 bg-blue-600 text-white text-center py-1.5 rounded hover:bg-blue-500 block transition">
+                className="mt-4 bg-white-600 text-white text-center py-1.5 rounded hover:bg-green-500 block transition">
                 Visit Profile
                 </a>
         </div >

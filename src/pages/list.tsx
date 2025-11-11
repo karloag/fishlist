@@ -1,4 +1,6 @@
 import StreamerCard from "../components/StreamerCard";
+import Layout from "../components/Layout";
+
 
 const streamers = [
   {
@@ -27,19 +29,45 @@ const streamers = [
     pinned: "Special charity event last stream.",
     avatarUrl: " " ,
   },
+  {
+    name: "Jane",
+    platform: "YouTube",
+    status: "offline",
+    lastOnline: "5 hours ago",
+    profileUrl: "https://youtube.com/@jane",
+    pinned: "Special charity event last stream.",
+    avatarUrl: " " ,
+  },
+  {
+    name: "Jane",
+    platform: "YouTube",
+    status: "offline",
+    lastOnline: "5 hours ago",
+    profileUrl: "https://youtube.com/@jane",
+    pinned: "Special charity event last stream.",
+    avatarUrl: " " ,
+  },
+  {
+    name: "Jane",
+    platform: "YouTube",
+    status: "offline",
+    lastOnline: "5 hours ago",
+    profileUrl: "https://youtube.com/@jane",
+    pinned: "Special charity event last stream.",
+    avatarUrl: " " ,
+  },
 ];
 
 function List() {
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Streamer List</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {streamers.map((s) => (
+    <Layout title="List">
+      {streamers.map((s) => (
           <StreamerCard key={s.name} streamer={s} />
         ))}
-      </div>
-    </div>
+    </Layout>
+
   );
 }
 
 export default List;
+
