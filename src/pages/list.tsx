@@ -61,9 +61,11 @@ const streamers = [
 function List() {
   return (
     <Layout title="List">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
       {streamers.map((s) => (
           <StreamerCard key={s.name} streamer={s} />
         ))}
+        </div>
     </Layout>
 
   );
