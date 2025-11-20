@@ -4,11 +4,11 @@ import Layout from "../components/Layout";
 
 const streamers = [
   {
-    name: "Alex",
-    platform: "Kick",
+    name: "Binx",
+    platform: "Twitch",
     status: "offline",
     lastOnline: "56 minutes ago",
-    profileUrl: "https://kick.com/monkeykingcobra",
+    profileUrl: "https://www.twitch.tv/binxbasilisk",
     avatarUrl: " " ,
     pinned: "Last stream: gaming marathon!",
   },
