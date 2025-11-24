@@ -7,7 +7,6 @@ type Streamer = {
     avatarUrl: string;
     pinned?: string;
 }
-
 function StreamerCard ({streamer}: {streamer:Streamer}){
     return(
         <div className="bg-gray 800 rounded-lg p-6 flex flex-col shadow-lg w-full max-w-xs">
