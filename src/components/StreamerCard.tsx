@@ -26,7 +26,7 @@ function StreamerCard ({streamer}: {streamer:Streamer}){
                 ` }>
                 {streamer.status === "live"? "● LIVE":"Offline"}
                 </span>
-             </div>
+             </div> 
              <div className="mt-2 text-xs text-grey-400">
              Last online: {streamer.lastOnline}   
              </div>
