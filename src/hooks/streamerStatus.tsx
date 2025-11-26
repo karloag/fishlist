@@ -1,24 +1,14 @@
 import { useState, useEffect } from 'react';
+import type { StreamStatus } from '../types';
 
-// Define types for the unified data shape
-type  StreamStatus = {
-platform: string;         // e.g., 'twitch', 'kick', 'youtube'
-username: string;         // Streamer username or channel ID
-live: boolean;            // Is currently live
-title: string | null;     // Stream title if live
-url: string;              // URL to the stream/channel
-thumbnail?: string | null; // Optional stream thumbnail
-avatar?: string | null;    // Optional avatar image
-error?: string | null;           // Error message if fetch failed
-};
-
-// The main fetching hook
 function StreamerStatus(platform: string, username: string): {status: StreamStatus | null; loading: boolean; error: string|null} {
+
 const [status, setStatus] = useState<StreamStatus | null>(null);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState<string | null>(null)
+
 useEffect(() => {
-  // Define the async fetch function inside useEffect
+  // async
   const fetchStatus = async () => {
     setLoading(true);
     setError(null);
@@ -128,9 +118,9 @@ return {
 };
 }
 
+export default StreamerStatus; 
 /* --- Usage in a component 
 
-// Example component that uses the hook
 function StreamerStatusDisplay({ platform, username }: { platform: string; username: string }) {
 const status = useStreamerStatus(platform, username);
 
@@ -152,5 +142,4 @@ return (
   </div>
 );
 }
-
 --- */

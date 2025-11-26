@@ -1,13 +1,11 @@
-type Streamer = {
-    name: string;
-    platform: string;
-    status: string;
-    lastOnline: string;
-    profileUrl: string;
-    avatarUrl: string;
-    pinned?: string;
-}
-function StreamerCard ({streamer}: {streamer:Streamer}){
+import StreamerStatus from "../hooks/streamerStatus";
+import { StreamStatus } from "../hooks/streamerStatus";
+import { Streamer } from "../types";
+
+
+function StreamerCard ({streamer}:{ streamer: Streamer}) {
+    const { status, loading, error } = StreamerStatus(streamer.platform.toLowerCase(), streamer.name);
+
     return(
         <div className="bg-gray 800 rounded-lg p-6 flex flex-col shadow-lg w-full max-w-xs">
             <img
@@ -19,13 +17,12 @@ function StreamerCard ({streamer}: {streamer:Streamer}){
                 <span className="text-xs ml-3 px-2 py-1 bg-green-700 rounded-full">{streamer.platform}</span>
             </div>
             <div className="mt-2">
-                <span className={ `text-sm ${
-                streamer.status=== "live" 
-                ? "text-green-400"
-                : "text-gray-400"}
-                ` }>
-                {streamer.status === "live"? "● LIVE":"Offline"}
+               {loading?(<span className="text-sm text-gray-400">Loading...</span>): error ? 
+               (<span className="text-sm text-red-400">Error: {error}</span>) : (
+                <span className={`text-sm ${status.live ? 'text-green-400' :'text-gray 400'}`}> 
+                {status.live ? "● LIVE:" + status.title: "Offline"}
                 </span>
+               )} 
              </div> 
              <div className="mt-2 text-xs text-grey-400">
              Last online: {streamer.lastOnline}   
