@@ -1,6 +1,6 @@
 import StreamerStatus from "../hooks/streamerStatus";
 import { StreamStatus } from "../hooks/streamerStatus";
-import { Streamer } from "../types";
+import type { Streamer } from "../types";
 
 
 function StreamerCard ({streamer}:{ streamer: Streamer}) {
@@ -31,7 +31,7 @@ function StreamerCard ({streamer}:{ streamer: Streamer}) {
                 <div className="mt-2 text-xs bg-blue-900 rounded p-2" >
                 {streamer.pinned} 
                 </div>
-             )} 
+             )}     
              <a href={streamer.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"

@@ -1,2 +1,2 @@
 export * from './streamer'
-export * from './streamStatus'
+export * from './StreamStatus'
