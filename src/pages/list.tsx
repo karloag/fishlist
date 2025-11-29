@@ -4,58 +4,15 @@ import Layout from "../components/Layout";
 
 const streamers = [
   {
-    name: "Binx",
+    name: "BinxBasilisk",
     platform: "Twitch",
     status: "offline",
     lastOnline: "56 minutes ago",
-    profileUrl: "https://www.twitch.tv/binxbasilisk",
+    profileUrl: "https://www.twitch.tv/BinxBasilisk",
     avatarUrl: " " ,
     pinned: "Last stream: gaming marathon!",
   },
-  {
-    name: "Mizzy",
-    platform: "Twitch",
-    status: "live",
-    lastOnline: "Now",
-    profileUrl: "https://twitch.tv/mizzy",
-    avatarUrl:" " ,
-  },
-  {
-    name: "Jane",
-    platform: "YouTube",
-    status: "offline",
-    lastOnline: "5 hours ago",
-    profileUrl: "https://youtube.com/@jane",
-    pinned: "Special charity event last stream.",
-    avatarUrl: " " ,
-  },
-  {
-    name: "Jane",
-    platform: "YouTube",
-    status: "offline",
-    lastOnline: "5 hours ago",
-    profileUrl: "https://youtube.com/@jane",
-    pinned: "Special charity event last stream.",
-    avatarUrl: " " ,
-  },
-  {
-    name: "Jane",
-    platform: "YouTube",
-    status: "offline",
-    lastOnline: "5 hours ago",
-    profileUrl: "https://youtube.com/@jane",
-    pinned: "Special charity event last stream.",
-    avatarUrl: " " ,
-  },
-  {
-    name: "Jane",
-    platform: "YouTube",
-    status: "offline",
-    lastOnline: "5 hours ago",
-    profileUrl: "https://youtube.com/@jane",
-    pinned: "Special charity event last stream.",
-    avatarUrl: " " ,
-  },
+
 ];
 
 function List() {

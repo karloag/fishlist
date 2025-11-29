@@ -1,5 +1,4 @@
 import StreamerStatus from "../hooks/streamerStatus";
-import { StreamStatus } from "../hooks/streamerStatus";
 import type { Streamer } from "../types";
 
 
@@ -19,8 +18,8 @@ function StreamerCard ({streamer}:{ streamer: Streamer}) {
             <div className="mt-2">
                {loading?(<span className="text-sm text-gray-400">Loading...</span>): error ? 
                (<span className="text-sm text-red-400">Error: {error}</span>) : (
-                <span className={`text-sm ${status.live ? 'text-green-400' :'text-gray 400'}`}> 
-                {status.live ? "● LIVE:" + status.title: "Offline"}
+                <span className={`text-sm ${status!.live ? 'text-green-400' :'text-gray 400'}`}> 
+                {status!.live ? "● LIVE:" + status!.title: "Offline"}
                 </span>
                )} 
              </div> 

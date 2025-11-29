@@ -8,16 +8,13 @@ const [status, setStatus] = useState<StreamStatus | null>(null);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState<string | null>(null)
 
-useEffect(() => {
-  // async
-  const fetchStatus = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
+  useEffect(() => {
+    const fetchStatus = async () => {//async
+      setLoading(true);
+      setError(null);
+      try {
       let data: StreamStatus | null = null;
 
-      // Call platform-specific fetchers based on platform argument
       switch (platform.toLowerCase()) { 
         
         case 'twitch':
@@ -40,7 +37,7 @@ useEffect(() => {
       setStatus(data);
     } catch (err) {
       console.log(err)
-      setError('Failed to fetch data');
+      setError('Failed to fetch data from setStatus catch!!');
       setStatus({
         platform,
         username,

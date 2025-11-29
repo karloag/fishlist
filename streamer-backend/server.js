@@ -1,13 +1,17 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
-
+import cors from 'cors';
 dotenv.config();
+
 
 const app = express();
 const PORT = 4000;
 
-// --------- TWITCH FETCHER (requires .env credentials) ----------
+app.use(cors({
+  origin: 'http://localhost:5173',
+}));
+
 async function fetchTwitch(username) {
   const CLIENT_ID = process.env.TWITCH_CLIENT_ID;
   const AUTH_TOKEN = process.env.TWITCH_AUTH_TOKEN;
@@ -19,6 +23,9 @@ async function fetchTwitch(username) {
       'Authorization': `Bearer ${AUTH_TOKEN}`,
     },
   });
+  
+
+
   const userData = await userResp.json();
   if (!userData.data || !userData.data.length)
     return { error: 'Twitch user not found' };
@@ -45,7 +52,6 @@ async function fetchTwitch(username) {
   };
 }
 
-// --------- KICK FETCHER (public endpoint, no .env needed) ----------
 async function fetchKick(username) {
   const resp = await fetch(`https://kick.com/api/v2/channels/${username}`);
   if (!resp.ok) return { error: 'Kick user not found' };
@@ -61,7 +67,6 @@ async function fetchKick(username) {
   };
 }
 
-// --------- YOUTUBE FETCHER (requires API KEY in .env) ----------
 async function fetchYouTube(channelId) {
   const YT_API = process.env.YOUTUBE_API_KEY;
   // Fetch active liveBroadcast info
@@ -83,21 +88,34 @@ async function fetchYouTube(channelId) {
   };
 }
 
-// ----------- AGNOSTIC ENDPOINT: GET STREAMER STATUS -------------
-app.get('/api/streamer/:platform/:id', async (req, res) => {
-  const { platform, id } = req.params;
-  let result;
-  try {
-    if (platform === 'twitch') result = await fetchTwitch(id);
-    else if (platform === 'kick') result = await fetchKick(id);
-    else if (platform === 'youtube') result = await fetchYouTube(id);
-    else return res.status(400).json({ error: 'Unsupported platform' });
 
-    if (result?.error) return res.status(404).json(result);
-    res.json(result);
-  } catch (e) {
-    res.status(500).json({ error: 'Server unavailable' });
-  }
+
+app.get('/api/streamer/:platform/:id', async (req, res) => {
+    const { platform, id } = req.params;
+    console.log(`Platform: ${platform}, ID: ${id}`);
+
+    // Validate platform
+    if (!['twitch', 'kick', 'youtube'].includes(platform)) {
+        return res.status(400).json({ error: 'Unsupported platform' });
+    }
+
+    // Validate ID
+    if (!id || typeof id !== 'string') {
+        return res.status(400).json({ error: 'Invalid ID' });
+    }
+
+    try {
+        let result;
+        if (platform === 'twitch') result = await fetchTwitch(id);
+        else if (platform === 'kick') result = await fetchKick(id);
+        else if (platform === 'youtube') result = await fetchYouTube(id);
+
+        if (result?.error) return res.status(404).json(result);
+        res.json(result);
+    } catch (error) {
+        console.error(error); // Log error for debugging
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 // ----------------- START SERVER -----------------------

@@ -1,6 +1,8 @@
+import process from "process";
+import type { StreamStatus } from "../../types";
 
 export async function fetchTwitch(username: string): Promise<StreamStatus> {
-// Example fetch: replace URL with your backend endpoint
+  
 const response = await fetch(`http://localhost:4000/api/twitch/stream/${username}`);
 const data = await response.json();
 
