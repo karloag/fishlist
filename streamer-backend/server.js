@@ -3,11 +3,8 @@ import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 import cors from 'cors';
 dotenv.config();
-
-
 const app = express();
 const PORT = 4000;
-
 app.use(cors({
   origin: 'http://localhost:5173',
 }));
@@ -24,14 +21,14 @@ async function fetchTwitch(username) {
     },
   });
   
+  const responseText = await userResp.text();
+  console.log('Raw API Response:', responseText);
 
-
-  const userData = await userResp.json();
+  const userData = JSON.parse(responseText);
+  const userId = userData.data[0]?.id;
   if (!userData.data || !userData.data.length)
     return { error: 'Twitch user not found' };
-  const userId = userData.data[0].id;
 
-  // Get stream info
   const streamResp = await fetch(`https://api.twitch.tv/helix/streams?user_id=${userId}`, {
     headers: {
       'Client-ID': CLIENT_ID,
@@ -41,9 +38,8 @@ async function fetchTwitch(username) {
   const streamData = await streamResp.json();
   const stream = streamData.data[0] || null;
 
-  // Return unified format
   return {
-    platform: 'Twitch',
+    platform: 'twitch',
     username,
     live: !!stream,
     title: stream?.title || null,
@@ -58,12 +54,12 @@ async function fetchKick(username) {
   const data = await resp.json();
   const live = !!data.livestream;
   return {
-    platform: 'Kick',
-    username,
-    live,
-    title: live ? data.livestream.session_title : null,
-    url: `https://kick.com/${username}`,
-    avatar: data.user?.profile_pic,
+    platform: 'kick',
+    username: data.user?.username,
+    live: !!data.livestream,
+    title: live ? data.livestream?.session_title : null,
+    url: `https://kick.com/${data.slug}`,
+    avatar: data.user?.profile_pic, 
   };
 }
 
@@ -109,16 +105,14 @@ app.get('/api/streamer/:platform/:id', async (req, res) => {
         if (platform === 'twitch') result = await fetchTwitch(id);
         else if (platform === 'kick') result = await fetchKick(id);
         else if (platform === 'youtube') result = await fetchYouTube(id);
-
         if (result?.error) return res.status(404).json(result);
         res.json(result);
     } catch (error) {
-        console.error(error); // Log error for debugging
+        console.error("Error from server.js catch",error); // Log error for debugging
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-// ----------------- START SERVER -----------------------
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
 });

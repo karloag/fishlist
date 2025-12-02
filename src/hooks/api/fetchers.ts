@@ -2,37 +2,46 @@ import process from "process";
 import type { StreamStatus } from "../../types";
 
 export async function fetchTwitch(username: string): Promise<StreamStatus> {
-  
-const response = await fetch(`http://localhost:4000/api/twitch/stream/${username}`);
-const data = await response.json();
-
-// Assume data shape:
-// { stream: {...} } if live, or { stream: null } if offline
-const live = data.stream !== null;
-return {
+  const response = await fetch(`http://localhost:4000/api/streamer/twitch/${username}`);
+  if(!response.ok){
+    throw new Error ("failed to fetch data from server ");
+  }
+  const data = await response.json();
+  //console.log('fetchers.ts Data from server:', data);
+  if (!data.live) {
+  return {
   platform: 'twitch',
-  username,
-  live,
-  title: data.stream?.title || null,
+  username: username,
+  live: data.live,
+  title: data.title || null,
   url: `https://twitch.tv/${username}`,
-  thumbnail: data.stream?.thumbnail_url || null,
-  avatar: data.stream?.avatar || null,
-};
+  thumbnail: data.thumbnail || null,
+  avatar: data.avatar || null,
+ };
+  }
+  return {
+  platform: 'twitch',
+  username: username,
+  live: data.live,
+  title: data.title || null,
+  url: `https://twitch.tv/${username}`,
+  thumbnail: data.thumbnail || null,
+  avatar: data.avatar || null,
+ };
 }
 
 export async function fetchKick(username: string): Promise<StreamStatus> {
-// Example: public API does not require auth
 const response = await fetch(`https://kick.com/api/v2/channels/${username}`);
 const data = await response.json();
-
 const live = !!data.livestream;
 return {
   platform: 'kick',
-  username,
-  live,
+  username: data.user?.username,
+  live: !!data.livestream,
   title: live ? data.livestream.session_title : null,
   url: `https://kick.com/${username}`,
-  thumbnail: null, // or data.livestream.thumbnail
+  thumbnail: null, 
+  avatar: data.user?.profile_pic
 };
 }
 
