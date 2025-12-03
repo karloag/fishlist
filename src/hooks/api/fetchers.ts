@@ -8,6 +8,7 @@ export async function fetchTwitch(username: string): Promise<StreamStatus> {
   }
   const data = await response.json();
   //console.log('fetchers.ts Data from server:', data);
+  //unnecessary case
   if (!data.live) {
   return {
   platform: 'twitch',
@@ -46,19 +47,32 @@ return {
 }
 
 export async function fetchYouTube(channelId: string): Promise<StreamStatus> {
-const API_KEY = process.env.YOUTUBE_API_KEY;
-const response = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${API_KEY}`);
+const response = await fetch(``);
 const data = await response.json();
-
 const live = data.items?.length > 0;
 const firstItem = data.items?.[0];
+if (!response.ok) {
+  return{
+    platform: "youtube",
+    username: channelId,
+    live: false,
+    title: null,
+    url: 'https://youtube.com/channel/${channelId}',
+    thumbnail: null,
+    avatar: null,
+    error: data?.error ?? "failed to fetch"
+
+  };
+}
+
 
 return {
   platform: 'youtube',
   username: channelId,
-  live,
-  title: live ? firstItem.snippet.title : null,
-  url: live ? `https://youtube.com/watch?v=${firstItem.id.videoId}` : `https://youtube.com/channel/${channelId}`,
-  thumbnail: live ? firstItem.snippet.thumbnails.default.url : null,
+  live: !!data.live,       // data= payloa  d 
+  title: data.title ?? null,
+  url: data.url ?? `https://youtube.com/channel/${channelId}`,
+  thumbnail: data.thumbnail ?? null,
+  avatar: data.avatar ?? null,
 };
 }

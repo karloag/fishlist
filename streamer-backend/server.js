@@ -13,17 +13,14 @@ async function fetchTwitch(username) {
   const CLIENT_ID = process.env.TWITCH_CLIENT_ID;
   const AUTH_TOKEN = process.env.TWITCH_AUTH_TOKEN;
 
-  // Get user info to retrieve user ID
   const userResp = await fetch(`https://api.twitch.tv/helix/users?login=${username}`, {
     headers: {
       'Client-ID': CLIENT_ID,
       'Authorization': `Bearer ${AUTH_TOKEN}`,
     },
   });
-  
   const responseText = await userResp.text();
   console.log('Raw API Response:', responseText);
-
   const userData = JSON.parse(responseText);
   const userId = userData.data[0]?.id;
   if (!userData.data || !userData.data.length)
@@ -65,32 +62,28 @@ async function fetchKick(username) {
 
 async function fetchYouTube(channelId) {
   const YT_API = process.env.YOUTUBE_API_KEY;
-  // Fetch active liveBroadcast info
-  // NOTE: You must use YouTube's Data API v3 and obtain an API key
-  // The following is a minimal live status fetch
   const searchURL = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&type=video&eventType=live&key=${YT_API}`;
   const resp = await fetch(searchURL);
   const data = await resp.json();
-  const live = !!(data.items && data.items.length > 0);
   const item = data.items?.[0];
+  const live = !!item;
 
   return {
-    platform: 'YouTube',
+    platform: 'youtube ',
     username: channelId,
     live,
-    title: live ? item.snippet.title : null,
-    url: live ? `https://www.youtube.com/watch?v=${item.id.videoId}` : `https://youtube.com/channel/${channelId}`,
-    avatar: live ? item.snippet.thumbnails.default.url : null,
+    title: live ? item[0].snippet.title : null,
+    url: live ? `https://www.youtube.com/watch?v=${item[0].id.videoId}`
+              : `https://youtube.com/channel/${channelId}`,
+    tumbnail: null,
+    avatar: null,
   };
 }
-
-
-
+ 
 app.get('/api/streamer/:platform/:id', async (req, res) => {
     const { platform, id } = req.params;
     console.log(`Platform: ${platform}, ID: ${id}`);
 
-    // Validate platform
     if (!['twitch', 'kick', 'youtube'].includes(platform)) {
         return res.status(400).json({ error: 'Unsupported platform' });
     }
