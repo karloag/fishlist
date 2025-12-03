@@ -9,6 +9,7 @@ const [loading, setLoading] = useState(true);
 const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let cancelled = false;
     const fetchStatus = async () => {
       setLoading(true);
       setError(null);
@@ -17,7 +18,6 @@ const [error, setError] = useState<string | null>(null)
       switch (platform) { 
         case 'twitch':
           data = await fetchTwitch(username);
-          console.log("data ",data)
           break;
 
         case 'kick':
@@ -31,30 +31,36 @@ const [error, setError] = useState<string | null>(null)
         default:
           data = { platform, username, live: false, title: null, url: '', error: 'Unknown platform' };
       }
-      setStatus(data);
-    } catch (err) {
-
-      console.log("streamerStatus.tsx fetchStatus() catch block ",err);
-      setStatus({ 
+      if (!cancelled) {
+        setStatus(data);
+        setError(data?error??null);
+      } 
+    } catch (err: any) {
+      if (!cancelled) {
+        setError(err?.message || "failed to fetch");
+        setStatus({ 
         platform,
         username,
         live: false,
         title: null,
         url: '',
-        error: 'Fetch error',
+        error: err?.message||'Fetch error',
       });
-    }
+      } }
+      finally {
+        if (!cancelled) setLoading(false);
+        }
     
-    setLoading(false);
   };
 
   fetchStatus();
-
   const intervalId = setInterval(fetchStatus, 900000); 
-  return () => clearInterval(intervalId);
-}, [platform, username]); // Re-run if platform or username changes
+  return ()=>{
+    cancelled = true;
+    clearInterval(intervalId);
+  };
+}, [platform, username]);
 
-return   {status, loading, error}  ;
+return   {status, loading, error};
 }
-
 export default StreamerStatus; 

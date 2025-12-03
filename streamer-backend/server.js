@@ -2,6 +2,8 @@ import express from 'express';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { error } from 'console';
+import { platform } from 'os';
 dotenv.config();
 const app = express();
 const PORT = 4000;
@@ -23,8 +25,11 @@ async function fetchTwitch(username) {
   console.log('Raw API Response:', responseText);
   const userData = JSON.parse(responseText);
   const userId = userData.data[0]?.id;
-  if (!userData.data || !userData.data.length)
+
+  if (!userData.data || !userData.data.length){
     return { error: 'Twitch user not found' };
+  }
+    
 
   const streamResp = await fetch(`https://api.twitch.tv/helix/streams?user_id=${userId}`, {
     headers: {
@@ -33,37 +38,45 @@ async function fetchTwitch(username) {
     },
   });
   const streamData = await streamResp.json();
-  const stream = streamData.data[0] || null;
+  const stream = streamData?.data?.[0] || null;
 
   return {
     platform: 'twitch',
     username,
     live: !!stream,
-    title: stream?.title || null,
+    title: stream?.title ?? null,
     url: `https://twitch.tv/${username}`,
-    avatar: userData.data[0].profile_image_url,
+    avatar: userData.data[0].profile_image_url ?? null,
+    //thumb
   };
 }
 
 async function fetchKick(username) {
   const resp = await fetch(`https://kick.com/api/v2/channels/${username}`);
-  if (!resp.ok) return { error: 'Kick user not found' };
+  if (!resp.ok){
+    return {error: "Kick user not found"};
+  }
   const data = await resp.json();
   const live = !!data.livestream;
   return {
     platform: 'kick',
-    username: data.user?.username,
-    live: !!data.livestream,
-    title: live ? data.livestream?.session_title : null,
+    username,
+    live,
+    title: live ? data.livestream.session_title : null,
     url: `https://kick.com/${data.slug}`,
-    avatar: data.user?.profile_pic, 
+    //thumb
+    avatar: data.user?.profile_pic ?? null , 
   };
 }
 
-async function fetchYouTube(channelId) {
+async function fetchYouTube(channelId) {  
   const YT_API = process.env.YOUTUBE_API_KEY;
   const searchURL = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&type=video&eventType=live&key=${YT_API}`;
   const resp = await fetch(searchURL);
+  if (!resp.ok) {
+    const text = await resp.text().catch(()=>"");
+    return {error: `youtube search failed: ${resp.status} ${text}`}
+  }
   const data = await resp.json();
   const item = data.items?.[0];
   const live = !!item;
@@ -72,13 +85,13 @@ async function fetchYouTube(channelId) {
     platform: 'youtube ',
     username: channelId,
     live,
-    title: live ? item[0].snippet.title : null,
+    title: live ? item.snippet.title : null,
     url: live ? `https://www.youtube.com/watch?v=${item[0].id.videoId}`
               : `https://youtube.com/channel/${channelId}`,
-    tumbnail: null,
+    tumbnail: live ? item.snippet.thumbnails?.default?.url ?? null : null,
     avatar: null,
   };
-}
+} 
  
 app.get('/api/streamer/:platform/:id', async (req, res) => {
     const { platform, id } = req.params;
@@ -88,7 +101,6 @@ app.get('/api/streamer/:platform/:id', async (req, res) => {
         return res.status(400).json({ error: 'Unsupported platform' });
     }
 
-    // Validate ID
     if (!id || typeof id !== 'string') {
         return res.status(400).json({ error: 'Invalid ID' });
     }

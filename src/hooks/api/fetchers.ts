@@ -1,75 +1,78 @@
-import process from "process";
 import type { StreamStatus } from "../../types";
 
 export async function fetchTwitch(username: string): Promise<StreamStatus> {
-  const response = await fetch(`http://localhost:4000/api/streamer/twitch/${username}`);
-  if(!response.ok){
-    throw new Error ("failed to fetch data from server ");
-  }
+  const response = await fetch(`http://localhost:4000/api/streamer/twitch/${encodeURIComponent(username)}`);
   const data = await response.json();
   //console.log('fetchers.ts Data from server:', data);
-  //unnecessary case
-  if (!data.live) {
-  return {
-  platform: 'twitch',
-  username: username,
-  live: data.live,
-  title: data.title || null,
-  url: `https://twitch.tv/${username}`,
-  thumbnail: data.thumbnail || null,
-  avatar: data.avatar || null,
+  if (!response.ok) {
+    return {
+    platform: 'twitch',
+    username,
+    live: false,
+    title: null,
+    url: `https://twitch.tv/${username}`,
+    thumbnail: null,
+    avatar: null,
+    error: data?.error ?? "Twitch fetching error"
  };
   }
   return {
-  platform: 'twitch',
-  username: username,
-  live: data.live,
-  title: data.title || null,
-  url: `https://twitch.tv/${username}`,
-  thumbnail: data.thumbnail || null,
-  avatar: data.avatar || null,
+    platform: 'twitch',
+    username,
+    live: !!data.live,
+    title: data.title ?? null,
+    url: `https://twitch.tv/${username}`,
+    thumbnail: data.thumbnail ?? null,
+    avatar: data.avatar ?? null,
  };
 }
 
 export async function fetchKick(username: string): Promise<StreamStatus> {
-const response = await fetch(`https://kick.com/api/v2/channels/${username}`);
+const response = await fetch(`http://localhost:4000/api/streamer/kick/${encodeURIComponent(username)}`);
 const data = await response.json();
-const live = !!data.livestream;
+if (!response.ok) {
+  return {
+    platform: 'kick',
+    username,
+    live: false,
+    title:  null,
+    url: `https://kick.com/${username}`,
+    thumbnail: null, 
+    avatar: null,
+    error: data?.error??"failed to fetch Kick",
+};  
+  
+}
 return {
   platform: 'kick',
   username: data.user?.username,
-  live: !!data.livestream,
-  title: live ? data.livestream.session_title : null,
+  live: !!data.live,
+  title: data.title ?? null,
   url: `https://kick.com/${username}`,
   thumbnail: null, 
-  avatar: data.user?.profile_pic
+  avatar: data.avatar?? null,
 };
 }
 
 export async function fetchYouTube(channelId: string): Promise<StreamStatus> {
-const response = await fetch(``);
+const response = await fetch(`http://localhost:4000/api/streamer/youtube/${encodeURIComponent(channelId)}`);
 const data = await response.json();
-const live = data.items?.length > 0;
-const firstItem = data.items?.[0];
 if (!response.ok) {
   return{
     platform: "youtube",
     username: channelId,
     live: false,
     title: null,
-    url: 'https://youtube.com/channel/${channelId}',
+    url: `https://youtube.com/channel/${channelId}`,
     thumbnail: null,
     avatar: null,
-    error: data?.error ?? "failed to fetch"
-
+    error: data?.error ?? "failed to fetch youtube"
   };
 }
-
-
 return {
   platform: 'youtube',
   username: channelId,
-  live: !!data.live,       // data= payloa  d 
+  live: !!data.live,       
   title: data.title ?? null,
   url: data.url ?? `https://youtube.com/channel/${channelId}`,
   thumbnail: data.thumbnail ?? null,
