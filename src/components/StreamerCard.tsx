@@ -8,7 +8,7 @@ function StreamerCard ({streamer}:{ streamer: Streamer}) {
         streamer.name);
     const isLive=status?.live;
     const title=status?.title??null;
-    const visitUrl=status?.url || streamer.profileUrl;
+    //const visitUrl=status?.url || streamer.profileUrl;
     return(
         <div className="bg-gray 800 rounded-lg p-6 flex flex-col shadow-lg w-full max-w-xs">
             <img
@@ -26,13 +26,18 @@ function StreamerCard ({streamer}:{ streamer: Streamer}) {
                (<span className="text-sm text-red-400">Error: {error}</span>)
                : (
                 <span className={`text-sm ${isLive ? 'text-green-400' : 'text-gray 400'}`}> 
-                {isLive ? `●LIVE: ${title ??""}` : "Offline"}
+                {isLive? (
+                    <>
+                     ● LIVE: <span className="text-xs">{title ?? ""}</span>
+                    </>
+
+                    ) : (
+                        "Offline"
+                    )}       
                 </span>
                )} 
              </div> 
-             <div className="mt-2 text-xs text-grey-400"> 
-             Last online: {streamer.lastOnline}   
-             </div>    
+            
              
         </div>
     );

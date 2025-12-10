@@ -17,7 +17,7 @@ function Layout({ title, children }: LayoutProps) {
             {children}
       </main>
       <footer className="p-4 bg-gray-900 text-center text-xs">
-        © 2025 Fishlist
+        © 2025 Streamerlist
       </footer>
     </div>  
   );

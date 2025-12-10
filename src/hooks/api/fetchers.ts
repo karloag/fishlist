@@ -28,8 +28,9 @@ export async function fetchTwitch(username: string): Promise<StreamStatus> {
 }
 
 export async function fetchKick(username: string): Promise<StreamStatus> {
-const response = await fetch(`http://localhost:4000/api/streamer/kick/${encodeURIComponent(username)}`);
+const response = await fetch(`http://localhost:4000/api/streamer/kick/${username}`);
 const data = await response.json();
+
 if (!response.ok) {
   return {
     platform: 'kick',
@@ -39,18 +40,20 @@ if (!response.ok) {
     url: `https://kick.com/${username}`,
     thumbnail: null, 
     avatar: null,
-    error: data?.error??"failed to fetch Kick",
+    error: "!response ok brach",
 };  
-  
 }
+const live = !!data.livestream;
+
 return {
   platform: 'kick',
   username: data.user?.username,
-  live: !!data.live,
-  title: data.title ?? null,
+  live,
+  title: live? data.livestream?.session_title ?? null : null ,
   url: `https://kick.com/${username}`,
   thumbnail: null, 
-  avatar: data.avatar?? null,
+  avatar: data.user?.profile_pic ?? null,
+  error: null,
 };
 }
 

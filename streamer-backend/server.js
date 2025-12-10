@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { error } from 'console';
 import { platform } from 'os';
+import { title } from 'process';
 dotenv.config();
 const app = express();
 const PORT = 4000;
@@ -48,24 +49,62 @@ async function fetchTwitch(username) {
     url: `https://twitch.tv/${username}`,
     avatar: userData.data[0].profile_image_url ?? null,
     //thumb
-  };
+  };  
 }
 
 async function fetchKick(username) {
-  const resp = await fetch(`https://kick.com/api/v2/channels/${username}`);
-  if (!resp.ok){
-    return {error: "Kick user not found"};
+  const slug = encodeURIComponent(username.trim().toLowerCase());
+  const resp = await fetch(`https://kick.com/api/v2/channels/${slug}`, {
+    headers: {
+      "User-Agent": "stream-status/1.0",
+      Accept: "application/json",
+      Referer: "https://kick.com/",
+      Origin: "https://kick.com",
+    },
+  });
+
+  const text = await resp.text();
+
+  if (resp.status !== 200) {
+    return {
+      platform: "kick",
+      username,
+      live: false,
+      title: null,
+      url: `https://kick.com/${username}`,
+      thumbnail: null,
+      avatar: null,
+      error: `Kick ${resp.status}: ${text}`,
+    };
   }
-  const data = await resp.json();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return {
+      platform: "kick",
+      username,
+      live: false,
+      title: null,
+      url: `https://kick.com/${username}`,
+      thumbnail: null,
+      avatar: null,
+      error: "Kick: invalid JSON",
+    };
+  }
+
   const live = !!data.livestream;
+
   return {
-    platform: 'kick',
+    platform: "kick",
     username,
     live,
-    title: live ? data.livestream.session_title : null,
-    url: `https://kick.com/${data.slug}`,
-    //thumb
-    avatar: data.user?.profile_pic ?? null , 
+    title: live ? data.livestream?.session_title ?? null : null,
+    url: `https://kick.com/${data.slug || username}`,
+    thumbnail: live ? data.livestream?.thumbnail?.url ?? null : null,
+    avatar: data.user?.profile_pic ?? null,
+    error: null,
   };
 }
 
@@ -95,7 +134,6 @@ async function fetchYouTube(channelId) {
  
 app.get('/api/streamer/:platform/:id', async (req, res) => {
     const { platform, id } = req.params;
-    console.log(`Platform: ${platform}, ID: ${id}`);
 
     if (!['twitch', 'kick', 'youtube'].includes(platform)) {
         return res.status(400).json({ error: 'Unsupported platform' });

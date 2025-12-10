@@ -3,33 +3,34 @@ import Layout from "../components/Layout";
 
 
 const streamers = [
-  {
+  /*{
     name: "BinxBasilisk",
     platform: "twitch",
     status: "",
     lastOnline: "",
-    profileUrl: "https://www.twitch.tv/BinxBasilisk",
-    avatarUrl: " " ,
+    profileUrl: "https://www.twitch.tv/Roblox",
+    avatarUrl: "" ,
     pinned: "",
-  },
+  },*/
   {
-    name: "lifeismizzy",
+    name: "chessbrah",
     platform: "kick",
     status: "",
     lastOnline: "",
-    profileUrl: "https://kick.com/lifeismizzy",
-    avatarUrl: " " ,
+    profileUrl: "https://kick.com/chessbrah",
+    avatarUrl: "" ,
     pinned: "",
   },
-  {
-    name: "lifeismizzy",
-    platform: "kick",
+  /*{
+    name: "Maya",
+    platform: "twitch",
     status: "",
     lastOnline: "",
-    profileUrl: "https://kick.com/lifeismizzy",
-    avatarUrl: " " ,
+    profileUrl: "https://www.twitch.tv/Maya",
+    avatarUrl: "" ,
     pinned: "",
-  }
+  }*/
+
 ];
 
 function List() {
